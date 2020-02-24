@@ -1,22 +1,26 @@
 package com.godeliveryservices.shop
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.godeliveryservices.shop.dummy.DummyContent
-import com.godeliveryservices.shop.ui.orders_history.OrdersHistoryTabFragment
+import com.godeliveryservices.shop.ui.dashboard.PlaceOrderViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var viewModel: PlaceOrderViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +44,22 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNavigationView.setupWithNavController(navController)
         sideNavigationView.setupWithNavController(navController)
+
+
+        viewModel =
+            ViewModelProviders.of(this).get(PlaceOrderViewModel::class.java)
+
+        setupObservers()
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun setupObservers() {
+        viewModel.showLoading.observe(this, Observer { flag ->
+            loading.visibility = if (flag) View.VISIBLE else View.GONE
+        })
     }
 }

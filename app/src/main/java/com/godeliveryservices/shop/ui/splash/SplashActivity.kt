@@ -6,6 +6,10 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.godeliveryservices.shop.R
 import com.godeliveryservices.shop.ui.login.LoginActivity
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class SplashActivity : AppCompatActivity() {
 
@@ -26,6 +30,7 @@ class SplashActivity : AppCompatActivity() {
 //        setupViews()
 //        setupObservers()
 //        viewModel.start()
+
     }
 
     private fun setupViews() {

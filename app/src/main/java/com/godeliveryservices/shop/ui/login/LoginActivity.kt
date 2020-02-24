@@ -2,11 +2,7 @@ package com.godeliveryservices.shop.ui.login
 
 import android.app.Activity
 import android.content.Intent
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -15,8 +11,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.godeliveryservices.shop.MainActivity
-
 import com.godeliveryservices.shop.R
 
 class LoginActivity : AppCompatActivity() {
@@ -54,11 +52,11 @@ class LoginActivity : AppCompatActivity() {
             val loginResult = it ?: return@Observer
 
             loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
+            if (!loginResult.success) {
+                showLoginFailed(loginResult.code)
             }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
+            if (loginResult.success) {
+//                updateUiWithUser(loginResult.success)
                 startActivity(Intent(this, MainActivity::class.java))
             }
             setResult(Activity.RESULT_OK)
@@ -111,8 +109,8 @@ class LoginActivity : AppCompatActivity() {
 //        ).show()
     }
 
-    private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    private fun showLoginFailed(errorString: Int) {
+        Toast.makeText(applicationContext, "Status code: $errorString", Toast.LENGTH_SHORT).show()
     }
 }
 
