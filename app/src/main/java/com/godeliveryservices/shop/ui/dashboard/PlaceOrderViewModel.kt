@@ -3,12 +3,9 @@ package com.godeliveryservices.shop.ui.dashboard
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.godeliveryservices.shop.models.Branch
 import com.godeliveryservices.shop.network.ApiService
 import com.godeliveryservices.shop.network.NotificationService
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -21,29 +18,29 @@ class PlaceOrderViewModel : ViewModel() {
     private val _showLoading = MutableLiveData<Boolean>(false)
     val showLoading: LiveData<Boolean> = _showLoading
 
+    private val _responseMessage = MutableLiveData<String>()
+    val responseMessage: LiveData<String> = _responseMessage
+
+    private val _branches = MutableLiveData<List<Branch>>()
+    val branches: LiveData<List<Branch>> = _branches
+
     private val notificationService = NotificationService.create()
     private val apiService = ApiService.create()
     private var disposable: Disposable? = null
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
-    }
 
-    val text: LiveData<String> = _text
-
-
-    private fun sendNotification(token: String) {
+    private fun sendNotification(branchName: String, ids: List<String>) {
         val headers =
             mapOf("Authorization" to "key=AIzaSyC7BJ2jUDgM5LhOMPgHg-E4imx2WnetBa8")
 
         val notification = mapOf(
             "title" to "New Order",
-            "body" to "Order#123 from Branch X for the Customer abc"
+            "body" to "$branchName has placed a new order. "
         )
 
         val body = mapOf<String, Any>(
             "notification" to notification,
-            "to" to token
+            "registration_ids" to ids
         )
 
         disposable = notificationService.sendNotification(headers, body)
@@ -51,18 +48,23 @@ class PlaceOrderViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
-                    _placeOrderSuccess.value = true
-                    _showLoading.value = false
-                    //                    result.message
+                    if (result.code() == 200) {
+                        _placeOrderSuccess.value = true
+                        _showLoading.value = false
+                    } else {
+                        _responseMessage.value = result.message()
+                        _showLoading.value = false
+                    }
                 },
                 { error ->
                     _showLoading.value = false
-                    //                    error.message
+                    _responseMessage.value = error.message
                 }
             )
     }
 
     fun placeOrder(
+        branchName: String,
         customerName: String,
         customerNumber: String,
         customerAddress: String,
@@ -70,9 +72,10 @@ class PlaceOrderViewModel : ViewModel() {
         amount: String,
         instructions: String
     ) {
+        val branch = _branches.value?.find { it.Name == branchName } ?: return
         _showLoading.value = true
         disposable = apiService.createOrder(
-            1,
+            branch.ShopBranchID,
             customerName,
             customerNumber,
             customerAddress,
@@ -83,24 +86,52 @@ class PlaceOrderViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(
-                { success -> if (success.code() == 200) fetchToken()
-                    else
-                    _showLoading.value = false },
+                { success ->
+                    if (success.code() == 200)
+                        fetchRiders(branch)
+                    else {
+                        _responseMessage.value = success.errorBody()?.string()
+                        _showLoading.value = false
+                    }
+                },
                 { error ->
-                    _showLoading.value = false})
+                    _showLoading.value = false
+                    _responseMessage.value = error.message
+                })
     }
 
-    private fun fetchToken() {
-        val database = FirebaseDatabase.getInstance()
-        val refDatabase = database.getReference("Rider Token")
-        refDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(p0: DataSnapshot) {
-                sendNotification(p0.value.toString())
-            }
+    private fun fetchRiders(branch: Branch) {
+        disposable = apiService.getRiders(branch.ShopBranchID)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({ success ->
+                if (success.code() == 200) {
+                    val riderIds = success.body()?.map { it.Token } ?: return@subscribe
+                    sendNotification(branch.Name, riderIds)
+                } else {
+                    _responseMessage.value = success.message()
+                    _showLoading.value = false
+                }
+            }, { error ->
+                _responseMessage.value = error.message
+                _showLoading.value = false
+            })
+    }
 
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-        })
+    fun fetchBranches(shopId: Long) {
+        _showLoading.value = true
+        disposable = apiService.getBranches(shopId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(
+                { success ->
+                    _branches.value = success.body()
+                    _showLoading.value = false
+                },
+                { error ->
+                    _responseMessage.value = error.message
+                    _showLoading.value = false
+                }
+            )
     }
 }

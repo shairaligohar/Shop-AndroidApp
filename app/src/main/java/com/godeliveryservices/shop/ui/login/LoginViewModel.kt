@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.godeliveryservices.shop.R
 import com.godeliveryservices.shop.data.LoginRepository
+import com.godeliveryservices.shop.models.Shop
 import com.godeliveryservices.shop.network.ApiService
+import com.godeliveryservices.shop.repository.PreferenceRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -17,8 +19,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
-    private val _loginResult = MutableLiveData<LoginResult>()
-    val loginResult: LiveData<LoginResult> = _loginResult
+    private val _loginResult = MutableLiveData<Shop>()
+    val loginResult: LiveData<Shop> = _loginResult
 
     private val apiService = ApiService.create()
     private var disposable: Disposable? = null
@@ -38,8 +40,14 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { success -> _loginResult.value = LoginResult(success = success.isSuccessful, code = success.code()) },
-                { error -> _loginResult.value = LoginResult(success = false, code = (error as HttpException).code()) }
+                { success ->
+                    _loginResult.value = success.body()
+                    //_loginResult.value = LoginResult(success = success.isSuccessful, code = success.code())
+                },
+                {
+                    error -> (error as? HttpException)?.code()
+//                        error -> _loginResult.value = LoginResult(success = false, code = (error as HttpException).code())
+                }
             )
     }
 

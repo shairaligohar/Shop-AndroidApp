@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/place_order_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -27,10 +28,10 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:hint="Branch"
-            app:startIconDrawable="@drawable/ic_location_city_black_24dp"
-            app:startIconTint="@color/colorPrimary"
             app:layout_constraintBottom_toTopOf="@id/container_customer"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:startIconDrawable="@drawable/ic_location_city_black_24dp"
+            app:startIconTint="@color/colorPrimary">
 
             <AutoCompleteTextView
                 android:id="@+id/dropdown_branch_choice"
@@ -64,13 +65,13 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:hint="Name"
-                    app:startIconDrawable="@drawable/ic_person_black_24dp"
-                    app:startIconTint="@color/colorPrimary"
                     app:layout_constraintBottom_toTopOf="@+id/input_layout_phone"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:startIconDrawable="@drawable/ic_person_black_24dp"
+                    app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/customer_name_text"
+                        android:id="@+id/rider_name_text"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:inputType="textPersonName" />
@@ -86,16 +87,16 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:hint="Phone"
-                    app:startIconDrawable="@android:drawable/stat_sys_phone_call"
-                    app:startIconTint="@color/colorPrimary"
                     app:layout_constraintBottom_toTopOf="@+id/input_layout_address"
-                    app:layout_constraintTop_toBottomOf="@id/input_layout_name">
+                    app:layout_constraintTop_toBottomOf="@id/input_layout_name"
+                    app:startIconDrawable="@android:drawable/stat_sys_phone_call"
+                    app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
                         android:id="@+id/customer_phone_text"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:inputType="textPhonetic" />
+                        android:inputType="phone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -108,14 +109,14 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:hint="Address"
-                    app:startIconDrawable="@drawable/ic_location_on_black_24dp"
-                    app:startIconTint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/input_layout_phone">
+                    app:layout_constraintTop_toBottomOf="@id/input_layout_phone"
+                    app:startIconDrawable="@drawable/ic_location_on_black_24dp"
+                    app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
                         android:id="@+id/customer_address_text"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:inputType="textPostalAddress|textMultiLine"
                         android:minLines="2" />
@@ -161,15 +162,15 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:hint="Description"
-                    app:startIconDrawable="@drawable/ic_description_black_24dp"
-                    app:startIconTint="@color/colorPrimary"
                     app:layout_constraintBottom_toTopOf="@+id/input_layout_price"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:startIconDrawable="@drawable/ic_description_black_24dp"
+                    app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/order_details_text"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/order_details_text"
                         android:inputType="textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -183,16 +184,16 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:hint="Amount"
-                    app:startIconDrawable="@drawable/ic_attach_money_black_24dp"
-                    app:startIconTint="@color/colorPrimary"
                     app:layout_constraintBottom_toTopOf="@+id/input_layout_instructions"
-                    app:layout_constraintTop_toBottomOf="@id/input_layout_description">
+                    app:layout_constraintTop_toBottomOf="@id/input_layout_description"
+                    app:startIconDrawable="@drawable/ic_attach_money_black_24dp"
+                    app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/order_amount_text"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/order_amount_text"
-                        android:inputType="textPhonetic" />
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -205,15 +206,15 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:hint="Instructions"
-                    app:startIconDrawable="@drawable/ic_library_books_black_24dp"
-                    app:startIconTint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/input_layout_price">
+                    app:layout_constraintTop_toBottomOf="@id/input_layout_price"
+                    app:startIconDrawable="@drawable/ic_library_books_black_24dp"
+                    app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/order_instructions_text"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/order_instructions_text"
                         android:inputType="textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -235,16 +236,15 @@
         </FrameLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/proceed_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="Proceed"
-            android:id="@+id/proceed_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_order" />
-
 
 
         <ProgressBar

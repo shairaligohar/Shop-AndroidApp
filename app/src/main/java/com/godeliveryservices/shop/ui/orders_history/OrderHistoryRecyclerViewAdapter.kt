@@ -1,14 +1,18 @@
 package com.godeliveryservices.shop.ui.orders_history
 
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.godeliveryservices.shop.R
-import com.godeliveryservices.shop.dummy.DummyContent
 import com.godeliveryservices.shop.dummy.DummyContent.DummyItem
+import com.godeliveryservices.shop.models.Order
 import kotlinx.android.synthetic.main.list_item_orders_history.view.*
+
 
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
@@ -16,7 +20,7 @@ import kotlinx.android.synthetic.main.list_item_orders_history.view.*
  * TODO: Replace the implementation with code for your data type.
  */
 class OrderHistoryRecyclerViewAdapter(
-    private val mValues: List<DummyItem>,
+    private var mValues: List<Order>,
     private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<OrderHistoryRecyclerViewAdapter.ViewHolder>() {
 
@@ -24,11 +28,16 @@ class OrderHistoryRecyclerViewAdapter(
 
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyItem
+            val item = v.tag as Order
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
         }
+    }
+
+    fun setValues(orders: List<Order>) {
+        mValues = orders
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,8 +48,26 @@ class OrderHistoryRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
-//        holder.mIdView.text = item.id
-//        holder.mContentView.text = item.content
+
+        if (item.Status == "Pending") {
+            holder.mView.customer_name_text.text = item.OrderDetails
+            holder.mView.customer_contact_text.text = item.CustomerAddress
+            holder.mView.rider_name_text.text = item.CustomerName
+            holder.mView.branch_name_text.text = item.CustomerNumber
+            holder.mView.branch_name_text.setTextColor(Color.parseColor("#3A33FF"))
+            holder.mView.branch_name_text.setOnClickListener{
+                mListener?.onPhoneNumberInteraction(item)
+            }
+        } else {
+            holder.mView.customer_name_text.text = item.RiderName
+            holder.mView.customer_contact_text.text = item.OrderDetails
+            holder.mView.rider_name_text.text = item.CustomerName
+            holder.mView.branch_name_text.text = item.CustomerAddress
+        }
+
+        holder.mView.order_date_text.text = item.orderDateFormatted ?: ""
+        holder.mView.order_number_text.text =
+            holder.mView.resources.getString(R.string.format_order_number, item.OrderID)
 
         with(holder.mView) {
             tag = item
@@ -74,5 +101,6 @@ class OrderHistoryRecyclerViewAdapter(
  */
 interface OnListFragmentInteractionListener {
     // TODO: Update argument type and name
-    fun onListFragmentInteraction(item: DummyContent.DummyItem?)
+    fun onListFragmentInteraction(item: Order?)
+    fun onPhoneNumberInteraction(item: Order)
 }

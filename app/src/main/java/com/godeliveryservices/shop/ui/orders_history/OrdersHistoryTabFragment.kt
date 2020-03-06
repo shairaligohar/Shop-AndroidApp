@@ -1,17 +1,20 @@
 package com.godeliveryservices.shop.ui.orders_history
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.godeliveryservices.shop.R
-import com.godeliveryservices.shop.dummy.DummyContent
+import com.godeliveryservices.shop.models.Order
+import kotlinx.android.synthetic.main.fragment_tab_orders_history.*
 import kotlinx.android.synthetic.main.fragment_tab_orders_history.view.*
 
 /**
@@ -23,13 +26,17 @@ class OrdersHistoryTabFragment : Fragment(),
     // TODO: Customize parameters
     private var columnCount = 1
 
-    private lateinit var pageViewModel: PageViewModel
+    private lateinit var pageViewModel: OrdersHistoryViewModel
+    private val adapter by lazy { OrderHistoryRecyclerViewAdapter(emptyList(), this) }
+    private val sectionNumber by lazy {
+        arguments?.getInt(ARG_SECTION_NUMBER)
+            ?: throw IllegalArgumentException("Unable to retrieve intent data")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pageViewModel = ViewModelProviders.of(this).get(PageViewModel::class.java).apply {
-            setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
-        }
+        pageViewModel =
+            ViewModelProviders.of(requireParentFragment()).get(OrdersHistoryViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -37,20 +44,12 @@ class OrdersHistoryTabFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_tab_orders_history, container, false)
-//        val textView: TextView = root.findViewById(R.id.section_label)
-//        pageViewModel.text.observe(this, Observer<String> {
-//            textView.text = it
-//        })
         with(root.list) {
             layoutManager = when {
                 columnCount <= 1 -> LinearLayoutManager(context)
                 else -> GridLayoutManager(context, columnCount)
             }
-            adapter =
-                OrderHistoryRecyclerViewAdapter(
-                    DummyContent.ITEMS,
-                    this@OrdersHistoryTabFragment
-                )
+            adapter = this@OrdersHistoryTabFragment.adapter
         }
         return root
     }
@@ -76,7 +75,55 @@ class OrdersHistoryTabFragment : Fragment(),
         }
     }
 
-    override fun onListFragmentInteraction(item: DummyContent.DummyItem?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onListFragmentInteraction(item: Order?) {
+
+    }
+
+    override fun onPhoneNumberInteraction(item: Order) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:${item.CustomerNumber}")
+        ContextCompat.startActivity(requireContext(), intent, null)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupObservers()
+        setupViews()
+    }
+
+    private fun fetchData() {
+        when (sectionNumber) {
+            0 -> pageViewModel.fetchOrders("Pending")
+            1 -> pageViewModel.fetchOrders("Active")
+            2 -> pageViewModel.fetchOrders("Delivered")
+        }
+    }
+
+    private fun setupObservers() {
+        pageViewModel.pendingOrders.observe(viewLifecycleOwner, Observer { orders ->
+            if (sectionNumber == 0)
+                adapter.setValues(orders)
+        })
+        pageViewModel.processingOrders.observe(viewLifecycleOwner, Observer { orders ->
+            if (sectionNumber == 1)
+                adapter.setValues(orders)
+        })
+        pageViewModel.deliveredOrders.observe(viewLifecycleOwner, Observer { orders ->
+            if (sectionNumber == 2)
+                adapter.setValues(orders)
+        })
+
+        pageViewModel.showLoading.observe(viewLifecycleOwner, Observer { flag ->
+            loading.visibility = if (flag) View.VISIBLE else View.GONE
+        })
+
+        pageViewModel.orderFilters.observe(viewLifecycleOwner, Observer { filters ->
+            fetchData()
+        })
+    }
+
+    private fun setupViews() {
+
     }
 }

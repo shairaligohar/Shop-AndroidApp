@@ -14,8 +14,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.preference.PreferenceManager
 import com.godeliveryservices.shop.MainActivity
 import com.godeliveryservices.shop.R
+import com.godeliveryservices.shop.repository.PreferenceRepository
 
 class LoginActivity : AppCompatActivity() {
 
@@ -51,18 +53,24 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
-            loading.visibility = View.GONE
-            if (!loginResult.success) {
-                showLoginFailed(loginResult.code)
-            }
-            if (loginResult.success) {
+//            loading.visibility = View.GONE
+//            if (!loginResult.success) {
+//                showLoginFailed(loginResult.code)
+//            }
+//            if (loginResult.success) {
 //                updateUiWithUser(loginResult.success)
+            PreferenceRepository(applicationContext).saveShopData(loginResult)
+                Toast.makeText(applicationContext, "Logged In Successful!", Toast.LENGTH_LONG)
+                    .show()
+                PreferenceManager.getDefaultSharedPreferences(applicationContext).edit()
+                    .putBoolean("LoggedIn", true).apply()
                 startActivity(Intent(this, MainActivity::class.java))
-            }
-            setResult(Activity.RESULT_OK)
 
-            //Complete and destroy login activity once successful
-            finish()
+                setResult(Activity.RESULT_OK)
+
+                //Complete and destroy login activity once successful
+                finish()
+//            }
         })
 
         username.afterTextChanged {
@@ -110,7 +118,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showLoginFailed(errorString: Int) {
-        Toast.makeText(applicationContext, "Status code: $errorString", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            applicationContext,
+            "Logged In failed with status code: $errorString",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 

@@ -33,12 +33,14 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
 
-    <string-array name="branches">
-        <item>Select Branch</item>
-        <item>Branch X</item>
-        <item>Branch Y</item>
-        <item>Branch Z</item>
+    <string-array name="status">
+        <item>Pending</item>
+        <item>Active</item>
+        <item>Delivered</item>
     </string-array>
     <string name="title_activity_maps">Map</string>
+
+    <string name="format_order_number">Order Number %1$d</string>
+    <string name="format_order_price">AED %1$.2f</string>
 </resources>
 
