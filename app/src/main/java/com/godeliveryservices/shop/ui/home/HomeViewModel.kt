@@ -10,12 +10,13 @@ import com.godeliveryservices.shop.network.ApiService
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 
 class HomeViewModel : ViewModel() {
 
@@ -27,13 +28,20 @@ class HomeViewModel : ViewModel() {
     private var disposable: Disposable? = null
 
     init {
-        fetchRidersLocation()
+        updateRidersLocationContinuously()
+    }
+
+    private fun updateRidersLocationContinuously() {
+        disposable = Observable.interval(0, 60, TimeUnit.SECONDS)
+            .observeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
+            .subscribe { fetchRidersLocation() }
     }
 
     private fun fetchRidersLocation() {
-        disposable = apiService.getRiders()
+        val disposable = apiService.getRiders()
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.io())
             .subscribe({ response ->
                 if (response.isSuccessful && response.code() == 200) {
                     viewModelScope.launch {

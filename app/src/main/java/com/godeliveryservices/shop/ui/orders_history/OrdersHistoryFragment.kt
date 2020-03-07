@@ -235,5 +235,5 @@ class OrdersHistoryFragment : Fragment() {
 data class OrderFilters(
     var startDate: String,
     var endDate: String,
-    var shopBranchID: Long
+    var shopBranchID: Long?
 )

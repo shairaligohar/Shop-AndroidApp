@@ -93,6 +93,7 @@ class CashReportsFragment : Fragment(), OnListFragmentInteractionListener {
         cashReportsViewModel.responseMessage.observe(
             viewLifecycleOwner,
             androidx.lifecycle.Observer { message ->
+                resetData()
                 Snackbar.make(content_cash_reports, message, Snackbar.LENGTH_LONG).show()
             })
 
@@ -137,7 +138,7 @@ class CashReportsFragment : Fragment(), OnListFragmentInteractionListener {
         filters?.shopBranchID?.let { branchId ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 dialog.dropdown_branch_choice.setText(
-                    branches.first { it.ShopBranchID == branchId }.Name,
+                    branches.find { it.ShopBranchID == branchId }?.Name,
                     false
                 )
             }
@@ -149,8 +150,8 @@ class CashReportsFragment : Fragment(), OnListFragmentInteractionListener {
             filters?.startDate = dialog.start_date_text.text.toString()
             filters?.endDate = dialog.end_date_text.text.toString()
             filters?.shopBranchID =
-                branches.first { it.Name == dialog.dropdown_branch_choice.text.toString() }
-                    .ShopBranchID
+                branches.find { it.Name == dialog.dropdown_branch_choice.text.toString() }
+                    ?.ShopBranchID
 
             cashReportsViewModel.orderFilters.value = filters
 
@@ -237,5 +238,10 @@ class CashReportsFragment : Fragment(), OnListFragmentInteractionListener {
             endDate = formattedDate,
             shopBranchID = branchId
         )
+    }
+
+    private fun resetData() {
+        total_cash_text.text = "AED 0.0"
+        recyclerViewAdapter.setValues(emptyList())
     }
 }

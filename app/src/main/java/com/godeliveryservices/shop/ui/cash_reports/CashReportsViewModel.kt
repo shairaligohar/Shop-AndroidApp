@@ -21,13 +21,13 @@ class CashReportsViewModel : ViewModel() {
     private val _responseMessage = MutableLiveData<String>()
     val responseMessage: LiveData<String> = _responseMessage
 
+    private val _branches = MutableLiveData<List<Branch>>()
+    val branches: LiveData<List<Branch>> = _branches
+
     val orderFilters = MutableLiveData<OrderFilters>()
 
     private val _orders = MutableLiveData<List<Order>>()
     val orders: LiveData<List<Order>> = _orders
-
-    private val _branches = MutableLiveData<List<Branch>>()
-    val branches: LiveData<List<Branch>> = _branches
 
     fun fetchOrders() {
         _showLoading.value = true
@@ -45,15 +45,15 @@ class CashReportsViewModel : ViewModel() {
                 if (success.code() == 200) {
                     _orders.value = success.body()
                 } else {
-                    _orders.value = emptyList()
                     _responseMessage.value = success.message()
                 }
             }, { error ->
-                _orders.value = emptyList()
                 _showLoading.value = false
                 _responseMessage.value = error.message
             })
     }
+
+
 
     fun fetchBranches(shopId: Long) {
         _showLoading.value = true
