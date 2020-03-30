@@ -54,7 +54,7 @@ class OrderHistoryRecyclerViewAdapter(
             holder.mView.customer_contact_text.text = item.CustomerAddress
             holder.mView.rider_name_text.text = item.CustomerName
             holder.mView.branch_name_text.text = item.CustomerNumber
-            holder.mView.branch_name_text.setTextColor(Color.parseColor("#3A33FF"))
+            holder.mView.branch_name_text.setTextColor(Color.parseColor("#2380B6"))
             holder.mView.branch_name_text.setOnClickListener{
                 mListener?.onPhoneNumberInteraction(item)
             }

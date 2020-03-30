@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 
 data class Branch(
+    @ColumnInfo var ShopName: String?,
     @ColumnInfo val Address: String,
     @ColumnInfo val Email: String,
     @ColumnInfo val JoiningDate: String,

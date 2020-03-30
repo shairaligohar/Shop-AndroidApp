@@ -59,7 +59,7 @@ class HomeViewModel : ViewModel() {
         riders?.forEach { rider ->
             val latlng = rider.RecentLocation?.split(",") ?: return@forEach
             markersList.add(
-                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker_32dp)).position(
+                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker_kangaroo)).position(
                     LatLng(latlng[0].toDouble(), latlng[1].toDouble())
                 ).title(rider.Name)
             )

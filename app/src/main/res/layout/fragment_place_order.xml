@@ -186,14 +186,14 @@
                     android:hint="Amount"
                     app:layout_constraintBottom_toTopOf="@+id/input_layout_instructions"
                     app:layout_constraintTop_toBottomOf="@id/input_layout_description"
-                    app:startIconDrawable="@drawable/ic_attach_money_black_24dp"
+                    app:startIconDrawable="@drawable/ic_dirham"
                     app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/order_amount_text"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:inputType="number" />
+                        android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout

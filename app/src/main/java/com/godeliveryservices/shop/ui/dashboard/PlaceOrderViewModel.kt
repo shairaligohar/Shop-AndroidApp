@@ -29,13 +29,13 @@ class PlaceOrderViewModel : ViewModel() {
     private var disposable: Disposable? = null
 
 
-    private fun sendNotification(branchName: String, ids: List<String>) {
+    private fun sendNotification(branch: Branch, ids: List<String>) {
         val headers =
             mapOf("Authorization" to "key=AIzaSyC7BJ2jUDgM5LhOMPgHg-E4imx2WnetBa8")
 
         val notification = mapOf(
-            "title" to "New Order",
-            "body" to "$branchName has placed a new order. "
+            "title" to branch.ShopName,
+            "body" to "${branch.Name} has placed a new order. "
         )
 
         val body = mapOf<String, Any>(
@@ -64,6 +64,7 @@ class PlaceOrderViewModel : ViewModel() {
     }
 
     fun placeOrder(
+        shopName: String?,
         branchName: String,
         customerName: String,
         customerNumber: String,
@@ -73,6 +74,7 @@ class PlaceOrderViewModel : ViewModel() {
         instructions: String
     ) {
         val branch = _branches.value?.find { it.Name == branchName } ?: return
+        branch.ShopName = shopName
         _showLoading.value = true
         disposable = apiService.createOrder(
             branch.ShopBranchID,
@@ -107,7 +109,7 @@ class PlaceOrderViewModel : ViewModel() {
             .subscribe({ success ->
                 if (success.code() == 200) {
                     val riderIds = success.body()?.map { it.Token } ?: return@subscribe
-                    sendNotification(branch.Name, riderIds)
+                    sendNotification(branch, riderIds)
                 } else {
                     _responseMessage.value = success.message()
                     _showLoading.value = false

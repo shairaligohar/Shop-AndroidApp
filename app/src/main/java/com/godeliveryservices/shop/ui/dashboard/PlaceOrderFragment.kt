@@ -69,6 +69,7 @@ class PlaceOrderFragment : Fragment() {
 
     private fun placeOrder() {
         placeOrderViewModel.placeOrder(
+            shopName = PreferenceRepository(requireContext()).getShopName(),
             branchName = dropdown_branch_choice.text.toString(),
             customerName = rider_name_text.text.toString(),
             customerNumber = customer_phone_text.text.toString(),
