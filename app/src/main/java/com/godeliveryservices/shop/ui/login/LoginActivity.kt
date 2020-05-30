@@ -53,24 +53,21 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
-//            loading.visibility = View.GONE
-//            if (!loginResult.success) {
-//                showLoginFailed(loginResult.code)
-//            }
-//            if (loginResult.success) {
-//                updateUiWithUser(loginResult.success)
             PreferenceRepository(applicationContext).saveShopData(loginResult)
-                Toast.makeText(applicationContext, "Logged In Successful!", Toast.LENGTH_LONG)
-                    .show()
-                PreferenceManager.getDefaultSharedPreferences(applicationContext).edit()
-                    .putBoolean("LoggedIn", true).apply()
-                startActivity(Intent(this, MainActivity::class.java))
+            Toast.makeText(applicationContext, "Logged In Successful!", Toast.LENGTH_LONG)
+                .show()
+            PreferenceManager.getDefaultSharedPreferences(applicationContext).edit()
+                .putBoolean("LoggedIn", true).apply()
+            startActivity(Intent(this, MainActivity::class.java))
 
-                setResult(Activity.RESULT_OK)
+            setResult(Activity.RESULT_OK)
 
-                //Complete and destroy login activity once successful
-                finish()
-//            }
+            finish()
+        })
+
+        loginViewModel.errorMessage.observe(this@LoginActivity, Observer {
+            loading.visibility = View.GONE
+            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
         })
 
         username.afterTextChanged {
@@ -104,25 +101,6 @@ class LoginActivity : AppCompatActivity() {
                 loginViewModel.login(username.text.toString(), password.text.toString())
             }
         }
-    }
-
-    private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
-        // TODO : initiate successful logged in experience
-//        Toast.makeText(
-//            applicationContext,
-//            "$welcome $displayName",
-//            Toast.LENGTH_LONG
-//        ).show()
-    }
-
-    private fun showLoginFailed(errorString: Int) {
-        Toast.makeText(
-            applicationContext,
-            "Logged In failed with status code: $errorString",
-            Toast.LENGTH_SHORT
-        ).show()
     }
 }
 

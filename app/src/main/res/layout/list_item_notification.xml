@@ -17,26 +17,30 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/title"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-            android:textStyle="bold"
+            android:id="@+id/date_text"
+            android:textColor="@android:color/darker_gray"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:text="Order #123 accepted"/>
 
         <TextView
+            android:id="@+id/time_text"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
             android:text="02 Aug 10:30 AM"/>
 
         <TextView
+            android:id="@+id/notification_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:text="Rider ABC has accepted the order #123 \nfrom branch XYZ"
-            app:layout_constraintTop_toBottomOf="@+id/title"/>
+            app:layout_constraintTop_toBottomOf="@+id/date_text"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

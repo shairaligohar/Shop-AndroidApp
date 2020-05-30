@@ -12,8 +12,10 @@ import io.reactivex.schedulers.Schedulers
 
 class PlaceOrderViewModel : ViewModel() {
 
-    private val _placeOrderSuccess = MutableLiveData<Boolean>(false)
-    val placeOrderSuccess: LiveData<Boolean> = _placeOrderSuccess
+    private var orderNumber: String? = null
+
+    private val _placeOrderSuccess = MutableLiveData<String>()
+    val placeOrderSuccess: LiveData<String> = _placeOrderSuccess
 
     private val _showLoading = MutableLiveData<Boolean>(false)
     val showLoading: LiveData<Boolean> = _showLoading
@@ -38,7 +40,7 @@ class PlaceOrderViewModel : ViewModel() {
             "body" to "${branch.Name} has placed a new order. "
         )
 
-        val body = mapOf<String, Any>(
+        val body = mapOf(
             "notification" to notification,
             "registration_ids" to ids
         )
@@ -48,17 +50,16 @@ class PlaceOrderViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
+                    _showLoading.value = false
                     if (result.code() == 200) {
-                        _placeOrderSuccess.value = true
-                        _showLoading.value = false
+                        _placeOrderSuccess.value = orderNumber
                     } else {
-                        _responseMessage.value = result.message()
-                        _showLoading.value = false
+                        _responseMessage.value = result.errorBody()?.string()
                     }
                 },
-                { error ->
+                {
                     _showLoading.value = false
-                    _responseMessage.value = error.message
+                    _responseMessage.value = "Connection Timeout"
                 }
             )
     }
@@ -89,16 +90,17 @@ class PlaceOrderViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .subscribe(
                 { success ->
-                    if (success.code() == 200)
+                    if (success.code() == 200) {
+                        orderNumber = success.body()
                         fetchRiders(branch)
-                    else {
+                    } else {
                         _responseMessage.value = success.errorBody()?.string()
                         _showLoading.value = false
                     }
                 },
-                { error ->
+                {
                     _showLoading.value = false
-                    _responseMessage.value = error.message
+                    _responseMessage.value = "Connection Error"
                 })
     }
 
@@ -111,11 +113,11 @@ class PlaceOrderViewModel : ViewModel() {
                     val riderIds = success.body()?.map { it.Token } ?: return@subscribe
                     sendNotification(branch, riderIds)
                 } else {
-                    _responseMessage.value = success.message()
+                    _responseMessage.value = success.errorBody()?.string()
                     _showLoading.value = false
                 }
             }, { error ->
-                _responseMessage.value = error.message
+                _responseMessage.value = "Connection Error"
                 _showLoading.value = false
             })
     }
@@ -127,11 +129,15 @@ class PlaceOrderViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .subscribe(
                 { success ->
-                    _branches.value = success.body()
                     _showLoading.value = false
+                    if (success.code() == 200) {
+                        _branches.value = success.body()
+                    } else {
+                        _responseMessage.value = success.errorBody()?.string()
+                    }
                 },
-                { error ->
-                    _responseMessage.value = error.message
+                {
+                    _responseMessage.value = "Connection Error"
                     _showLoading.value = false
                 }
             )

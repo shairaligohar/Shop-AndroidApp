@@ -51,7 +51,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 //            // Add a marker in Sydney and move the camera
 //            val deliverBoy1 = LatLng(25.247317, 55.431333)
 //            markers.add(
-//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker_32dp)).position(
+//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker)).position(
 //                    deliverBoy1
 //                ).title("Delivery Boy 1")
 //            )
@@ -59,7 +59,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 //            // Add a marker in Sydney and move the camera
 //            val deliverBoy2 = LatLng(25.260839, 55.389845)
 //            markers.add(
-//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker_32dp)).position(
+//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker)).position(
 //                    deliverBoy2
 //                ).title("Delivery Boy 2")
 //            )
@@ -67,7 +67,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 //            // Add a marker in Sydney and move the camera
 //            val deliverBoy3 = LatLng(25.228835, 55.464972)
 //            markers.add(
-//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker_32dp)).position(
+//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker)).position(
 //                    deliverBoy3
 //                ).title("Delivery Boy 3")
 //            )
@@ -75,7 +75,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 //            // Add a marker in Sydney and move the camera
 //            val deliverBoy4 = LatLng(25.209000, 55.420502)
 //            markers.add(
-//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker_32dp)).position(
+//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker)).position(
 //                    deliverBoy4
 //                ).title("Delivery Boy 4")
 //            )
@@ -83,7 +83,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 //            // Add a marker in Sydney and move the camera
 //            val deliverBoy5 = LatLng(25.238533, 55.341212)
 //            markers.add(
-//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker_32dp)).position(
+//                MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_maps_marker)).position(
 //                    deliverBoy5
 //                ).title("Delivery Boy 5")
 //            )

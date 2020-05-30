@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.godeliveryservices.shop.R
 import com.godeliveryservices.shop.dummy.DummyContent
 import com.godeliveryservices.shop.dummy.DummyContent.DummyItem
+import com.godeliveryservices.shop.models.Notification
+import kotlinx.android.synthetic.main.list_item_notification.view.*
 import kotlinx.android.synthetic.main.list_item_orders_history.view.*
 
 /**
@@ -16,7 +18,7 @@ import kotlinx.android.synthetic.main.list_item_orders_history.view.*
  * TODO: Replace the implementation with code for your data type.
  */
 class NotificationsRecyclerViewAdapter(
-    private val mValues: List<DummyItem>,
+    private var mValues: List<Notification>,
     private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<NotificationsRecyclerViewAdapter.ViewHolder>() {
 
@@ -24,11 +26,16 @@ class NotificationsRecyclerViewAdapter(
 
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyItem
+            val item = v.tag as Notification
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
         }
+    }
+
+    fun setValues(notifications: List<Notification>) {
+        mValues = notifications
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,8 +46,9 @@ class NotificationsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
-//        holder.mIdView.text = item.id
-//        holder.mContentView.text = item.content
+        holder.mView.date_text.text = item.Date
+        holder.mView.time_text.text = item.Time
+        holder.mView.notification_text.text = item.Text
 
         with(holder.mView) {
             tag = item
@@ -74,5 +82,5 @@ class NotificationsRecyclerViewAdapter(
  */
 interface OnListFragmentInteractionListener {
     // TODO: Update argument type and name
-    fun onListFragmentInteraction(item: DummyContent.DummyItem?)
+    fun onListFragmentInteraction(item: Notification?)
 }

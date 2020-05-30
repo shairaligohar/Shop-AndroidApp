@@ -1,16 +1,17 @@
 package com.godeliveryservices.shop.ui.dashboard
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.godeliveryservices.shop.R
 import com.godeliveryservices.shop.repository.PreferenceRepository
 import com.godeliveryservices.shop.ui.orders_history.BranchesSpinnerAdapter
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_place_order.*
 
 
@@ -52,14 +53,15 @@ class PlaceOrderFragment : Fragment() {
     private fun setupObservers() {
         placeOrderViewModel.showLoading.observe(viewLifecycleOwner, Observer { flag ->
             loading.visibility = if (flag) View.VISIBLE else View.GONE
+            proceed_button.isEnabled = flag.not()
         })
 
         placeOrderViewModel.responseMessage.observe(viewLifecycleOwner, Observer { message ->
-            Snackbar.make(place_order_content, message, Snackbar.LENGTH_LONG).show()
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         })
 
-        placeOrderViewModel.placeOrderSuccess.observe(viewLifecycleOwner, Observer {
-            if (it) parentFragmentManager.popBackStack()
+        placeOrderViewModel.placeOrderSuccess.observe(viewLifecycleOwner, Observer { orderNumber ->
+            showOrderSuccessDialog(orderNumber)
         })
 
         placeOrderViewModel.branches.observe(viewLifecycleOwner, Observer { branches ->
@@ -67,7 +69,24 @@ class PlaceOrderFragment : Fragment() {
         })
     }
 
+    private fun showOrderSuccessDialog(orderNumber: String) {
+        AlertDialog.Builder(context)
+            .setTitle("Order Placed Successfully")
+            .setMessage("Order number is $orderNumber")
+            .setPositiveButton(
+                android.R.string.ok
+            ) { _, _ ->
+                parentFragmentManager.popBackStack()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
     private fun placeOrder() {
+        if (dropdown_branch_choice.text.toString().isEmpty()) {
+            Toast.makeText(context, "Please select branch", Toast.LENGTH_LONG).show()
+            return
+        }
         placeOrderViewModel.placeOrder(
             shopName = PreferenceRepository(requireContext()).getShopName(),
             branchName = dropdown_branch_choice.text.toString(),
@@ -78,11 +97,5 @@ class PlaceOrderFragment : Fragment() {
             amount = order_amount_text.text.toString(),
             instructions = order_instructions_text.text.toString()
         )
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-//        disposable?.dispose()
     }
 }

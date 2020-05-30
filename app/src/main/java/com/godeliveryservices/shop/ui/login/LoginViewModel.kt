@@ -1,6 +1,7 @@
 package com.godeliveryservices.shop.ui.login
 
 import android.util.Patterns
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,32 +23,28 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginResult = MutableLiveData<Shop>()
     val loginResult: LiveData<Shop> = _loginResult
 
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
+
     private val apiService = ApiService.create()
     private var disposable: Disposable? = null
 
     fun login(username: String, password: String) {
-        // can be launched in a separate asynchronous job
-//        val result = loginRepository.login(username, password)
-//
-//        if (result is Result.Success) {
-//            _loginResult.value =
-//                LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
-//        } else {
-//            _loginResult.value = LoginResult(error = R.string.login_failed)
-//        }
-
         disposable = apiService.login(username, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { success ->
-                    _loginResult.value = success.body()
-                    //_loginResult.value = LoginResult(success = success.isSuccessful, code = success.code())
+                    when (success.code()) {
+                        200 -> {
+                            _loginResult.value = success.body()
+                        }
+                        else -> {
+                            _errorMessage.value = success.errorBody()?.string()
+                        }
+                    }
                 },
-                {
-                    error -> (error as? HttpException)?.code()
-//                        error -> _loginResult.value = LoginResult(success = false, code = (error as HttpException).code())
-                }
+                { _errorMessage.value = "Connection Error" }
             )
     }
 

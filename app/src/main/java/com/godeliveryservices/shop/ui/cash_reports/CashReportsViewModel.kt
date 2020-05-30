@@ -45,14 +45,13 @@ class CashReportsViewModel : ViewModel() {
                 if (success.code() == 200) {
                     _orders.value = success.body()
                 } else {
-                    _responseMessage.value = success.message()
+                    _orders.value = emptyList()
                 }
-            }, { error ->
+            }, {
                 _showLoading.value = false
-                _responseMessage.value = error.message
+                _responseMessage.value = "Connection Error"
             })
     }
-
 
 
     fun fetchBranches(shopId: Long) {
@@ -65,8 +64,8 @@ class CashReportsViewModel : ViewModel() {
                     _branches.value = success.body()
                     _showLoading.value = false
                 },
-                { error ->
-                    _responseMessage.value = error.message
+                {
+                    _responseMessage.value = "Connection Error"
                     _showLoading.value = false
                 }
             )

@@ -65,17 +65,20 @@ class OrdersHistoryViewModel : ViewModel() {
                     }
                 } else {
                     when (status) {
-                        "Pending" -> _responseMessagePending.value = success.message()
-                        "Active" -> _responseMessageProcessing.value = success.message()
-                        "Delivered" -> _responseMessageDelivered.value = success.message()
+                        "Pending" -> _responseMessagePending.value =
+                            "Pending Orders: ${success.message()}"
+                        "Active" -> _responseMessageProcessing.value =
+                            "Active Orders: ${success.message()}"
+                        "Delivered" -> _responseMessageDelivered.value =
+                            "Delivered Orders: ${success.message()}"
                     }
                     clearOrders(status)
                 }
-            }, { error ->
+            }, {
                 when (status) {
-                    "Pending" -> _responseMessagePending.value = error.message
-                    "Active" -> _responseMessageProcessing.value = error.message
-                    "Delivered" -> _responseMessageDelivered.value = error.message
+                    "Pending" -> _responseMessagePending.value = "Connection Error"
+                    "Active" -> _responseMessageProcessing.value = "Connection Error"
+                    "Delivered" -> _responseMessageDelivered.value = "Connection Error"
                 }
                 _showLoading.value = false
                 clearOrders(status)
@@ -100,8 +103,8 @@ class OrdersHistoryViewModel : ViewModel() {
                     _branches.value = success.body()
                     _showLoading.value = false
                 },
-                { error ->
-                    _responseMessage.value = error.message
+                {
+                    _responseMessage.value = "Connection Error"
                     _showLoading.value = false
                 }
             )

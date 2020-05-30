@@ -2,11 +2,14 @@ package com.godeliveryservices.shop.ui.orders_history
 
 import android.content.Intent
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -102,28 +105,65 @@ class OrdersHistoryTabFragment : Fragment(),
 
     private fun setupObservers() {
         pageViewModel.pendingOrders.observe(viewLifecycleOwner, Observer { orders ->
-            if (sectionNumber == 0)
+            if (sectionNumber == 0) {
                 adapter.setValues(orders)
+                unavailable_text.visibility = if (orders.isEmpty()) View.VISIBLE else View.GONE
+            }
         })
         pageViewModel.processingOrders.observe(viewLifecycleOwner, Observer { orders ->
-            if (sectionNumber == 1)
+            if (sectionNumber == 1) {
                 adapter.setValues(orders)
+                unavailable_text.visibility = if (orders.isEmpty()) View.VISIBLE else View.GONE
+            }
         })
         pageViewModel.deliveredOrders.observe(viewLifecycleOwner, Observer { orders ->
-            if (sectionNumber == 2)
+            if (sectionNumber == 2) {
                 adapter.setValues(orders)
+                unavailable_text.visibility = if (orders.isEmpty()) View.VISIBLE else View.GONE
+            }
         })
 
         pageViewModel.showLoading.observe(viewLifecycleOwner, Observer { flag ->
-            loading.visibility = if (flag) View.VISIBLE else View.GONE
+//            loading.visibility = if (flag) View.VISIBLE else View.GONE
+            list_layout.isRefreshing = flag
         })
 
         pageViewModel.orderFilters.observe(viewLifecycleOwner, Observer { filters ->
             fetchData()
         })
+
+
+        pageViewModel.responseMessagePending.observe(viewLifecycleOwner, Observer { message ->
+            if (sectionNumber == 0) {
+//                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                unavailable_text.visibility = View.VISIBLE
+                unavailable_text.text = "No Pending Orders"
+            }
+        })
+
+        pageViewModel.responseMessageProcessing.observe(viewLifecycleOwner, Observer { message ->
+            if (sectionNumber == 1) {
+//                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                unavailable_text.text = "No Active Orders"
+                unavailable_text.visibility = View.VISIBLE
+            }
+        })
+
+        pageViewModel.responseMessageDelivered.observe(viewLifecycleOwner, Observer { message ->
+            if (sectionNumber == 2) {
+//                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                unavailable_text.text = "No Delivered Orders"
+                unavailable_text.visibility = View.VISIBLE
+            }
+        })
+
+        pageViewModel.responseMessage.observe(viewLifecycleOwner, Observer { message ->
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            unavailable_text.visibility = View.VISIBLE
+        })
     }
 
     private fun setupViews() {
-
+        list_layout.setOnRefreshListener { fetchData() }
     }
 }

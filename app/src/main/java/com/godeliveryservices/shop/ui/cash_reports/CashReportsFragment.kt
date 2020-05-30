@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,13 +17,11 @@ import com.godeliveryservices.shop.models.Order
 import com.godeliveryservices.shop.repository.PreferenceRepository
 import com.godeliveryservices.shop.ui.orders_history.BranchesSpinnerAdapter
 import com.godeliveryservices.shop.ui.orders_history.OrderFilters
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.dialog_order_filters.*
 import kotlinx.android.synthetic.main.fragment_cash_reports.*
 import kotlinx.android.synthetic.main.fragment_cash_reports.view.*
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 class CashReportsFragment : Fragment(), OnListFragmentInteractionListener {
     // TODO: Customize parameters
@@ -63,6 +62,8 @@ class CashReportsFragment : Fragment(), OnListFragmentInteractionListener {
         cashReportsViewModel =
             ViewModelProviders.of(this).get(CashReportsViewModel::class.java)
         cashReportsViewModel.fetchBranches(PreferenceRepository(requireContext()).getShopId())
+
+        list_layout.setOnRefreshListener { fetchData() }
     }
 
     private fun fetchData() {
@@ -82,24 +83,27 @@ class CashReportsFragment : Fragment(), OnListFragmentInteractionListener {
             androidx.lifecycle.Observer { orders ->
                 total_cash_text.text = "AED ${orders.first().Cash}"
                 recyclerViewAdapter.setValues(orders)
+                unavailable_text.visibility = if (orders.isEmpty()) View.VISIBLE else View.GONE
             })
 
         cashReportsViewModel.showLoading.observe(
             viewLifecycleOwner,
             androidx.lifecycle.Observer { flag ->
-                loading.visibility = if (flag) View.VISIBLE else View.GONE
+                list_layout.isRefreshing = flag
+//                loading.visibility = if (flag) View.VISIBLE else View.GONE
             })
 
         cashReportsViewModel.responseMessage.observe(
             viewLifecycleOwner,
             androidx.lifecycle.Observer { message ->
                 resetData()
-                Snackbar.make(content_cash_reports, message, Snackbar.LENGTH_LONG).show()
+//                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                unavailable_text.visibility = View.VISIBLE
             })
 
         cashReportsViewModel.orderFilters.observe(
             viewLifecycleOwner,
-            androidx.lifecycle.Observer { filters ->
+            androidx.lifecycle.Observer {
                 fetchData()
             })
     }

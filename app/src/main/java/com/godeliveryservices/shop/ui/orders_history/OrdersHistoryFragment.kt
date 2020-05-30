@@ -7,12 +7,13 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.godeliveryservices.shop.R
 import com.godeliveryservices.shop.repository.PreferenceRepository
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.dialog_order_filters.*
@@ -60,8 +61,23 @@ class OrdersHistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
+//        setupViews()
         ordersHistoryViewModel.fetchBranches(PreferenceRepository(requireContext()).getShopId())
     }
+
+//    private fun setupViews() {
+//        viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+//            override fun onPageScrolled(
+//                position: Int,
+//                positionOffset: Float,
+//                positionOffsetPixels: Int
+//            ) {
+//                unavailable_text.visibility = View.GONE
+//                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+//            }
+//
+//        })
+//    }
 
     override fun onResume() {
         super.onResume()
@@ -86,37 +102,9 @@ class OrdersHistoryFragment : Fragment() {
                 drowDownAdapter.addItems(branches)
                 setDefaultFilters()
             })
-
-        ordersHistoryViewModel.responseMessagePending.observe(
-            viewLifecycleOwner,
-            androidx.lifecycle.Observer { message ->
-                if (viewPager.currentItem == 0)
-                    Snackbar.make(order_history_layout, message, Snackbar.LENGTH_LONG).show()
-            })
-
-        ordersHistoryViewModel.responseMessageProcessing.observe(
-            viewLifecycleOwner,
-            androidx.lifecycle.Observer { message ->
-                if (viewPager.currentItem == 1)
-                    Snackbar.make(order_history_layout, message, Snackbar.LENGTH_LONG).show()
-            })
-
-        ordersHistoryViewModel.responseMessageDelivered.observe(
-            viewLifecycleOwner,
-            androidx.lifecycle.Observer { message ->
-                if (viewPager.currentItem == 2)
-                    Snackbar.make(order_history_layout, message, Snackbar.LENGTH_LONG).show()
-            })
-
-        ordersHistoryViewModel.responseMessage.observe(
-            viewLifecycleOwner,
-            androidx.lifecycle.Observer { message ->
-                Snackbar.make(order_history_layout, message, Snackbar.LENGTH_LONG).show()
-            })
     }
 
     private fun showFilterDialog() {
-
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_order_filters)
         dialog.dropdown_branch_choice.setAdapter(drowDownAdapter)

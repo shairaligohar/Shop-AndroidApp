@@ -1,9 +1,6 @@
 package com.godeliveryservices.shop.network
 
-import com.godeliveryservices.shop.models.Branch
-import com.godeliveryservices.shop.models.Order
-import com.godeliveryservices.shop.models.Rider
-import com.godeliveryservices.shop.models.Shop
+import com.godeliveryservices.shop.models.*
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -39,7 +36,7 @@ interface ApiService {
         @Query("OrderDetails") orderDetails: String,
         @Query("Amount") amount: String,
         @Query("Instructions") instructions: String
-    ): Observable<Response<Void>>
+    ): Observable<Response<String>>
 
     @GET("/api/shop")
     fun getBranches(@Query("ShopID") shopID: Long): Observable<Response<List<Branch>>>
@@ -57,6 +54,9 @@ interface ApiService {
 
     @GET("/api/rider")
     fun getRiders(): Observable<Response<List<Rider>>>
+
+    @GET("/api/notification")
+    fun getNotifications(@Query("ShopID") shopId: Long): Observable<Response<List<Notification>>>
 }
 
 interface NotificationService {
