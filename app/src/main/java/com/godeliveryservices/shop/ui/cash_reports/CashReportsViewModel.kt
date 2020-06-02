@@ -45,7 +45,7 @@ class CashReportsViewModel : ViewModel() {
                 if (success.code() == 200) {
                     _orders.value = success.body()
                 } else {
-                    _orders.value = emptyList()
+                    _responseMessage.value = success.errorBody()?.string()
                 }
             }, {
                 _showLoading.value = false
